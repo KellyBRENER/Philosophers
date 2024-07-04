@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/03 13:31:40 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/04 14:28:20 by kbrener-         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 # include "philosophers.h"
 
@@ -115,6 +115,29 @@ void	*philo_routine(void *data)
 	}
 	clean_all(philo_data);
 }
+
+void	*check_dead(void *info)
+{
+	int	i;
+	t_data	*data;
+
+	i = 0;
+	data = (t_data *) info;
+	while (1)
+	{
+		pthread_mutex_lock(&(data->is_dying));
+		if (data->dead != -1)
+			break;
+		pthread_mutex_unlock(&(data->is_dying));
+		usleep(1000);
+	}
+	while (i < data->nbr_of_philo)
+	{
+		pthread_detach(data->philo[i]);
+		i++;
+	}
+	clean_all(data);
+}
 /*philo_eating(int time_to_eat) = fonction permettant a un philo de manger*/
 /*philo_sleeping(int time_to_sleep) = fonction permettant a un philo de dormir*/
 /*philo_thinking() = fonction permettant a un philo de penser*/
@@ -126,12 +149,12 @@ int	main(int argc, char **argv)
 	i = 0;
 	data = malloc(sizeof(t_data));
 	memset(data, 0, sizeof(t_data));
-/*recuperation du nbr de philo*/
 	if (argc < 5 || argc > 6)
 		return (1);
 	data->nbr_of_meals = -1;
 	if (argc == 6)
 		data->nbr_of_meals = ft_atoi(argv[6]);
+/*recuperation du nbr de philo*/
 	data->nbr_of_philo = ft_atoi(argv[2]);
 	data->time_to_die = ft_atoi(argv[3]);
 	data->time_to_eat = ft_atoi(argv[4]);
@@ -156,9 +179,19 @@ int	main(int argc, char **argv)
 		return (clean_all(data));
 	memset(data->philo, 0, sizeof(data->philo));
 	data->dead = -1;
+	pthread_mutex_init(&(data->is_dying), NULL);
 	while (i < data->nbr_of_philo)
 	{
 		pthread_create(&data->philo[i], NULL, philo_routine, (void *)data);
 		i++;
 	}
+	i = 0;
+	pthread_create(&(data->monitoring), NULL, check_dead, (void *) data);
+	while (i < data->nbr_of_philo)
+	{
+		pthread_join(data->philo[i], NULL);
+		i++;
+	}
+	clean_all(data);
+	return (0);
 }

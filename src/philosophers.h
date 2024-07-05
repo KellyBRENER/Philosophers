@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philosophers.h                                     :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:07:46 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/04 14:30:17 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/05 15:20:33 by kbrener-         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 # include <pthread.h>
 # include <stdlib.h>
@@ -21,6 +21,8 @@ typedef struct s_data
 	pthread_mutex_t	*fork;
 	pthread_t		*philo;
 	pthread_t		monitoring;
+	struct timeval	*start_time;
+	struct timeval	**last_meal;
 	int				nbr_of_philo;
 	int				time_to_die;//temps max qui separe 2 repas
 	int				time_to_eat;//duree du repas

@@ -1,4 +1,4 @@
-/* ************************************************************************** */
+/******************************************************************************/
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
@@ -6,9 +6,9 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/04 14:28:20 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/05 16:17:03 by kbrener-         ###   ########.fr       */
 /*                                                                            */
-/* ************************************************************************** */
+/******************************************************************************/
 
 # include "philosophers.h"
 
@@ -38,82 +38,119 @@ int	ft_atoi(const char *nptr)
 	}
 	return (nb * sign);
 }
-int	philo_eating(t_data *data, int i, int **time_before)
+void	dead_process(t_data *data, int i)
+{
+
+}
+int	calcul_diff(struct timeval *last_meal, struct timeval *current_time)
+{
+	int	diff;
+
+	diff = ((current_time->tv_sec - last_meal->tv_sec) * 1000) +
+		((current_time->tv_usec - last_meal->tv_usec) / 1000);
+	return (diff);
+}
+int	philo_eating(t_data *data, int i)
 {
 	int	left;//fork of the philo
 	int	right;//fork of the neighboor
-	int	time_after[2];
+	struct timeval	*begin_meal;
+	int	time_stamp;
+	int	time_since_last_meal;
 
 	left = i;
 	if (i < data->nbr_of_philo - 1)
 		right = i + 1;
 	else
 		right = 0;
-	if ((data->fork[right]) == 0)//second fork don't exist
-	{
-		ft_printf("not enough fork");
-		return (-1);
-	}
 	pthread_mutex_lock(&(data->fork[left]));
+	gettimeofday(begin_meal, NULL);
+	time_stamp = calcul_diff(data->start_time, begin_meal);
+	printf("%d ms %d has taken a fork", time_stamp, i);
 	pthread_mutex_lock(&(data->fork[right]));
-	gettimeofday(&time_after[0], &time_after[1]);
-	if (calcul_diff(*time_before, time_after) > data->time_to_die)
+	gettimeofday(begin_meal, NULL);
+	time_stamp = calcul_diff(data->start_time, begin_meal);
+	printf("%d ms %d has taken a fork", time_stamp, i);
+	time_since_last_meal = calcul_diff(data->last_meal[i], begin_meal);
+	if (time_since_last_meal > data->time_to_die)
 	{
+		pthread_mutex_lock(&(data->is_dying));
+		data->dead = i;
 		pthread_mutex_unlock(&(data->fork[left]));
 		pthread_mutex_unlock(&(data->fork[right]));
 		return (-1);
 	}
-	(data->meals[i])++;
+	time_stamp = calcul_diff(data->start_time, begin_meal);
+	data->last_meal[i] = begin_meal;
+	printf("at %d : philo n°%d is eating", time_stamp, i);
 	pthread_mutex_unlock(&(data->fork[left]));
 	pthread_mutex_unlock(&(data->fork[right]));
-	*time_before = time_after;
+	(data->meals[i])++;
 	return (0);
 }
 
-void	philo_sleeping(t_data *data, int i)
+int	philo_sleeping(t_data *data, int i)
 {
-	if (data->time_to_sleep > data->time_to_die)
+	struct timeval *sleep;
+	int time_stamp;
+
+	gettimeofday(sleep, NULL);
+	time_stamp = calcul_diff(data->start_time, sleep);
+	if (calcul_diff(data->last_meal[i], sleep) > data->time_to_die)
 	{
-		ft_printf("philo n°%d died because time to sleep longer than time to die", i);
+		pthread_mutex_lock(&(data->is_dying));
 		data->dead = i;
-		return ;
+		return (-1);
 	}
+	printf("%d ms : %d is sleeping", time_stamp, i);
 	usleep(data->time_to_sleep * 1000);
+	gettimeofday(sleep, NULL);
+	if (calcul_diff(data->last_meal[i], sleep) > data->time_to_die)
+	{
+		pthread_mutex_lock(&(data->is_dying));
+		data->dead = i;
+		return (-1);
+	}
+	return (0);
 }
 
-void	philo_thinking(t_data *data, int i)
+int	philo_thinking(t_data *data, int i)
 {
+	struct timeval *think;
+	int time_stamp;
 
+	gettimeofday(think, NULL);
+	time_stamp = calcul_diff(data->start_time, think);
+	if (calcul_diff(data->last_meal[i], think) > data->time_to_die)
+	{
+		pthread_mutex_lock(&(data->is_dying));
+		data->dead = i;
+		return (-1);
+	}
+	printf("%d ms : %d is thinking", time_stamp, i);
+	return (0);
 }
 /*philo_routine() = fonction qui lance la routine : manger, dormir, penser*/
-void	*philo_routine(void *data)
+void	*philo_routine(void *philo_data)
 {
-	t_data *philo_data;
+	t_data *data;
 	int	i;
 	struct timeval	time_before;
 
 	i = 0;
-	gettimeofday(&time_before, NULL);
-	philo_data = (t_data *)data;
-	while (philo_data->philo[i] != NULL)
+	data = (t_data *)philo_data;
+	while (data->philo[i] != NULL)
 		i++;
 	i = i - 1;
-	while(philo_data->meals[i] < philo_data->nbr_of_meals ||
-		philo_data->nbr_of_meals == -1)
+	while(data->dead == -1)
 	{
-
-		if (philo_data->dead != -1 || philo_eating(data, i, &time_before) == -1)
-		{
-			ft_printf("philo n°%d died", philo_data->dead);
-			break;
-		}
-		else
-		{
-			philo_sleeping(philo_data, i);
-			philo_thinking(philo_data, i);
-		}
+		if (philo_eating(data, i) == -1)
+			return;
+		if (philo_sleeping(data, i) == -1)
+			return;
+		if (philo_thinking(data, i) == -1)
+			return;
 	}
-	clean_all(philo_data);
 }
 
 void	*check_dead(void *info)
@@ -151,9 +188,10 @@ int	main(int argc, char **argv)
 	memset(data, 0, sizeof(t_data));
 	if (argc < 5 || argc > 6)
 		return (1);
-	data->nbr_of_meals = -1;
+	gettimeofday(data->stat_time, NULL);
+	data->nbr_of_meals_min = -1;
 	if (argc == 6)
-		data->nbr_of_meals = ft_atoi(argv[6]);
+		data->nbr_of_meals_min = ft_atoi(argv[6]);
 /*recuperation du nbr de philo*/
 	data->nbr_of_philo = ft_atoi(argv[2]);
 	data->time_to_die = ft_atoi(argv[3]);
@@ -180,6 +218,14 @@ int	main(int argc, char **argv)
 	memset(data->philo, 0, sizeof(data->philo));
 	data->dead = -1;
 	pthread_mutex_init(&(data->is_dying), NULL);
+	data->last_meal = malloc(data->nbr_of_philo * sizeof(struct timeval *));
+	if (!data->last_meal)
+		return (clean_all(data));
+	while (i < data->nbr_of_philo)
+	{
+		data->last_meal[i] = data->start_time;
+		i++;
+	}
 	while (i < data->nbr_of_philo)
 	{
 		pthread_create(&data->philo[i], NULL, philo_routine, (void *)data);

@@ -1,4 +1,4 @@
-/******************************************************************************/
+/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   philosophers.c                                     :+:      :+:    :+:   */
@@ -6,12 +6,12 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/05 16:17:03 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/08 16:48:24 by kbrener-         ###   ########.fr       */
 /*                                                                            */
-/******************************************************************************/
+/* ************************************************************************** */
 
 # include "philosophers.h"
-
+/*finir de rentrer les prints et de modifier eating et thinking et monitor, gerer la mort des thread*/
 int	ft_atoi(const char *nptr)
 {
 	int	nb;
@@ -50,27 +50,53 @@ int	calcul_diff(struct timeval *last_meal, struct timeval *current_time)
 		((current_time->tv_usec - last_meal->tv_usec) / 1000);
 	return (diff);
 }
-int	philo_eating(t_data *data, int i)
+void	print_action(t_data *data,struct timeval *current_time, int i, int action)
+{
+	int	time_stamp;
+
+	gettimeofday(current_time, NULL);
+	time_stamp = calcul_diff(data->start_time, current_time);
+	pthread_mutex_lock(&(data->print));
+	if (action = THINK)
+		printf("%d ms : %d is thinking", time_stamp, i);
+	else if (action = FORK)
+		printf("%d ms philo %d has taken a fork", time_stamp, i);
+	else if (action = EAT)
+		printf("%d ms philo %d is eating", time_stamp, i);
+	else if (action == SLEEP)
+	else if (action == DEAD)
+	else if (action == FULL)
+}
+int	philo_thinking(t_data *data, int i)
 {
 	int	left;//fork of the philo
 	int	right;//fork of the neighboor
-	struct timeval	*begin_meal;
-	int	time_stamp;
-	int	time_since_last_meal;
+	struct timeval *think;
+	int time_stamp;
 
 	left = i;
 	if (i < data->nbr_of_philo - 1)
 		right = i + 1;
 	else
 		right = 0;
+	print_action(data, think, i, THINK);
 	pthread_mutex_lock(&(data->fork[left]));
-	gettimeofday(begin_meal, NULL);
-	time_stamp = calcul_diff(data->start_time, begin_meal);
-	printf("%d ms %d has taken a fork", time_stamp, i);
+	print_action(data, think, i, FORK);
 	pthread_mutex_lock(&(data->fork[right]));
+	print_action(data, think, i, FORK);
+	return (0);
+}
+int	philo_eating(t_data *data, int i)
+{
+	struct timeval	*begin_meal;
+	int	time_stamp;
+	int	time_since_last_meal;
+
+
+	if (philo_thinking(data, i) == -1)
+		return (-1);
 	gettimeofday(begin_meal, NULL);
 	time_stamp = calcul_diff(data->start_time, begin_meal);
-	printf("%d ms %d has taken a fork", time_stamp, i);
 	time_since_last_meal = calcul_diff(data->last_meal[i], begin_meal);
 	if (time_since_last_meal > data->time_to_die)
 	{
@@ -82,7 +108,6 @@ int	philo_eating(t_data *data, int i)
 	}
 	time_stamp = calcul_diff(data->start_time, begin_meal);
 	data->last_meal[i] = begin_meal;
-	printf("at %d : philo n°%d is eating", time_stamp, i);
 	pthread_mutex_unlock(&(data->fork[left]));
 	pthread_mutex_unlock(&(data->fork[right]));
 	(data->meals[i])++;
@@ -114,28 +139,11 @@ int	philo_sleeping(t_data *data, int i)
 	return (0);
 }
 
-int	philo_thinking(t_data *data, int i)
-{
-	struct timeval *think;
-	int time_stamp;
-
-	gettimeofday(think, NULL);
-	time_stamp = calcul_diff(data->start_time, think);
-	if (calcul_diff(data->last_meal[i], think) > data->time_to_die)
-	{
-		pthread_mutex_lock(&(data->is_dying));
-		data->dead = i;
-		return (-1);
-	}
-	printf("%d ms : %d is thinking", time_stamp, i);
-	return (0);
-}
 /*philo_routine() = fonction qui lance la routine : manger, dormir, penser*/
 void	*philo_routine(void *philo_data)
 {
 	t_data *data;
 	int	i;
-	struct timeval	time_before;
 
 	i = 0;
 	data = (t_data *)philo_data;
@@ -151,93 +159,4 @@ void	*philo_routine(void *philo_data)
 		if (philo_thinking(data, i) == -1)
 			return;
 	}
-}
-
-void	*check_dead(void *info)
-{
-	int	i;
-	t_data	*data;
-
-	i = 0;
-	data = (t_data *) info;
-	while (1)
-	{
-		pthread_mutex_lock(&(data->is_dying));
-		if (data->dead != -1)
-			break;
-		pthread_mutex_unlock(&(data->is_dying));
-		usleep(1000);
-	}
-	while (i < data->nbr_of_philo)
-	{
-		pthread_detach(data->philo[i]);
-		i++;
-	}
-	clean_all(data);
-}
-/*philo_eating(int time_to_eat) = fonction permettant a un philo de manger*/
-/*philo_sleeping(int time_to_sleep) = fonction permettant a un philo de dormir*/
-/*philo_thinking() = fonction permettant a un philo de penser*/
-int	main(int argc, char **argv)
-{
-	t_data	*data;
-	int	i;
-
-	i = 0;
-	data = malloc(sizeof(t_data));
-	memset(data, 0, sizeof(t_data));
-	if (argc < 5 || argc > 6)
-		return (1);
-	gettimeofday(data->stat_time, NULL);
-	data->nbr_of_meals_min = -1;
-	if (argc == 6)
-		data->nbr_of_meals_min = ft_atoi(argv[6]);
-/*recuperation du nbr de philo*/
-	data->nbr_of_philo = ft_atoi(argv[2]);
-	data->time_to_die = ft_atoi(argv[3]);
-	data->time_to_eat = ft_atoi(argv[4]);
-	data->time_to_sleep = ft_atoi(argv[5]);
-	data->meals = malloc(data->nbr_of_philo * sizeof(int));
-	if (!data->meals)
-		return (clean_all(data));
-	/*creation des fork qui sont des mutex*/
-	data->fork = malloc(data->nbr_of_philo * sizeof(pthread_mutex_t));
-	if (!data->fork)
-		return (clean_all(data));
-	memset(data->fork, 0, sizeof(data->fork));
-	while (i < data->nbr_of_philo)
-	{
-		pthread_mutex_init(&(data->fork[i]), NULL);
-		i++;
-	}
-	i = 0;
-	/*creation des philo qui sont des thread*/
-	data->philo = malloc(data->nbr_of_philo * sizeof(pthread_t));
-	if (!data->philo)
-		return (clean_all(data));
-	memset(data->philo, 0, sizeof(data->philo));
-	data->dead = -1;
-	pthread_mutex_init(&(data->is_dying), NULL);
-	data->last_meal = malloc(data->nbr_of_philo * sizeof(struct timeval *));
-	if (!data->last_meal)
-		return (clean_all(data));
-	while (i < data->nbr_of_philo)
-	{
-		data->last_meal[i] = data->start_time;
-		i++;
-	}
-	while (i < data->nbr_of_philo)
-	{
-		pthread_create(&data->philo[i], NULL, philo_routine, (void *)data);
-		i++;
-	}
-	i = 0;
-	pthread_create(&(data->monitoring), NULL, check_dead, (void *) data);
-	while (i < data->nbr_of_philo)
-	{
-		pthread_join(data->philo[i], NULL);
-		i++;
-	}
-	clean_all(data);
-	return (0);
 }

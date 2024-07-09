@@ -6,60 +6,67 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 15:36:34 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/08 16:28:15 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/09 11:49:42 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "philosophers.h"
+#include "philosophers.h"
+
+int	time_to_die(t_data *data)
+{
+	int				i;
+	struct timeval	*current_time;
+	int				time_stamp;
+
+	i = 0;
+	while (i < data->nbr_of_philo)
+	{
+		gettimeofday(current_time, NULL);
+		time_stamp = calcul_diff(data->last_meal[i], current_time);
+		if (time_stamp > data->time_to_die)
+		{
+			pthread_mutex_lock(&(data->is_dying));
+			data->dead = i;
+			pthread_mutex_unlock(&(data->is_dying));
+			return (0);
+		}
+		i++;
+	}
+	return (-1);
+}
+
+int	all_philo_full(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->nbr_of_philo)
+	{
+		if (data->meals[i] < data->nbr_of_meals_min)
+			return (-1);
+	}
+	data->all_full = 0;
+	return (0);
+}
 
 void	*monit_routine(void *info)
 {
-	int	i;
-	t_data	*data;
-	struct timeval *current_time;
-	int	timestamp;
+	int				i;
+	t_data			*data;
+	struct timeval	*current_time;
+	int				timestamp;
 
 	i = 0;
 	data = (t_data *) info;
 	while (1)
 	{
-		while (i < data->nbr_of_philo)
-		{
-			gettimeofday(current_time, NULL);
-			if (calcul_diff(data->last_meal[i], current_time) > data->time_to_die)
-			{
-				pthread_mutex_lock(&(data->is_dying));
-				data->dead = i;
-				pthread_mutex_unlock(&(data->is_dying));
-				break;
-			}
-			i++;
-		}
-		while (--i >= 0)
-		{
-			if (data->meals[i] < data->nbr_of_meals_min)
-				break;
-			if (i == 0)
-			{
-				gettimeofday(current_time, NULL);
-				data->all_full = 0;
-				break;
-			}
-		}
-		pthread_mutex_lock(&(data->is_dying));
-		if (data->dead != -1 || data->all_full != -1)
-		{
-			timestamp = calcul_diff(data->start_time, current_time);
-			pthread_mutex_unlock(&(data->is_dying));
-			break;
-		}
-		pthread_mutex_unlock(&(data->is_dying));
+		if (time_to_die(data) == 0)
+			break ;
+		if (all_philo_full(data) == 0)
+			break ;
 	}
-	pthread_mutex_lock(&(data->print));
-	if (data->all_full != -1)
-		printf("%d ms all philo ate at least %d meals",
-			timestamp, data->nbr_of_meals_min);
+	if (data->all_full == -0)
+		print_action(data, data->nbr_of_meals_min, FULL);
 	else
-		printf("%d ms philo %d died", timestamp, i);
-	clean_all(data);
+		print_action(data, data->dead, DEAD);
 }

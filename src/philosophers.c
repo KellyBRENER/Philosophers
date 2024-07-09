@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 11:56:40 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/09 15:39:35 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	philo_eat(t_data *data, int i)
 		return (-1);
 	print_action(data, i, EAT);
 	usleep(data->time_to_eat);
-	data->meals[i]++;
+	data->philo[i]->meals++;
 	if (philo_dead(data) == -1)
 		return (-1);
 	return (0);
@@ -66,26 +66,19 @@ int	philo_think_eat(t_data *data, int i)
 /*philo_routine() = fonction qui lance la routine : manger, dormir, penser*/
 void	*philo_routine(void *philo_data)
 {
-	t_data	*data;
+	t_philo	*philo;
 	int		i;
 
-	i = 0;
-	data = (t_data *)philo_data;
-	while (data->philo != NULL)
+	i = philo->philo_id;
+	philo = (t_data *)philo_data;
+	while (philo_dead(philo->data) != -1)
 	{
-		i++;
-		data->philo++;
+		if (philo_think_eat(philo->data, i) == -1)
+			return (NULL);
+		if (philo_dead(philo->data) == -1)
+			return (NULL);
+		if (philo_sleep(philo->data, i) == -1)
+			return (NULL);
 	}
-	i = i - 1;
-	while (1)
-	{
-		if (philo_dead(data) == -1)
-			return ;
-		if (philo_think_eat(data, i) == -1)
-			return ;
-		if (philo_dead(data) == -1)
-			return ;
-		if (philo_sleep(data, i) == -1)
-			return ;
-	}
+	return (NULL);
 }

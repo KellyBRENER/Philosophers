@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:11:10 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 11:51:29 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/09 15:40:02 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,12 +39,12 @@ int	ft_atoi(const char *nptr)
 	return (nb * sign);
 }
 
-int	calcul_diff(struct timeval *last_meal, struct timeval *current_time)
+int	calcul_diff(struct timeval last_meal, struct timeval current_time)
 {
 	int	diff;
 
-	diff = ((current_time->tv_sec - last_meal->tv_sec) * 1000)
-		+ ((current_time->tv_usec - last_meal->tv_usec) / 1000);
+	diff = ((current_time.tv_sec - last_meal.tv_sec) * 1000)
+		+ ((current_time.tv_usec - last_meal.tv_usec) / 1000);
 	return (diff);
 }
 
@@ -62,10 +62,10 @@ int	philo_dead(t_data *data)
 
 void	print_action(t_data *data, int i, int action)
 {
-	struct timeval	*current_time;
+	struct timeval	current_time;
 	int				time_stamp;
 
-	gettimeofday(current_time, NULL);
+	gettimeofday(&current_time, NULL);
 	time_stamp = calcul_diff(data->start_time, current_time);
 	pthread_mutex_lock(&(data->print));
 	if (action == THINK)
@@ -73,7 +73,10 @@ void	print_action(t_data *data, int i, int action)
 	else if (action == FORK)
 		printf("%d ms philo %d has taken a fork", time_stamp, i);
 	else if (action == EAT)
+	{
+		data->philo[i]->last_meal = current_time;
 		printf("%d ms philo %d is eating", time_stamp, i);
+	}
 	else if (action == SLEEP)
 		printf("%d ms philo %d is sleeping", time_stamp, i);
 	else if (action == DEAD)

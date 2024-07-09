@@ -6,49 +6,34 @@
 #    By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/02 14:01:34 by kbrener-          #+#    #+#              #
-#    Updated: 2024/07/02 15:04:08 by kbrener-         ###   ########.fr        #
+#    Updated: 2024/07/09 13:46:07 by kbrener-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# Program name
-NAME	= philosophers
+NAME = philo
+DIR_SRC = src/
+DIR_OBJ = obj/
+CC = gcc
+CFLAGS = -Wall -Wextra -Werror -ggdb
+RM = rm -f
 
-# Compiler options
-CC		= cc
-CFLAGS	= -Wall -Wextra -Werror -g -pthread #-fsanitize=thread
+SRCS =  $(wildcard $(DIR_SRC)*.c) \
 
-# philosophers files
-SRC		= 	src/philosophers.c \
+OBJS = $(SRCS:$(DIR_SRC)%.c=$(DIR_OBJ)%.o)
 
-OBJ		= $(SRC:.c=.o)
+all: $(NAME)
 
-# Colors
-RESET = \033[0m
-BOLD = \033[1m
-RED = \033[91m
-GREEN = \033[92m
-YELLOW = \033[33m
-ORANGE = \033[93m
-BLUE = \033[94m
+$(DIR_OBJ)%.o: $(DIR_SRC)%.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
-all : $(NAME)
-
-# Compiling philosophers
-$(NAME): $(OBJ)
-	@echo "$(BOLD)$(RED)🛠️      Compiling philosophers    🛠️$(RESET)"
-	@echo "\n"
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -g
-	@echo "$(BOLD)$(GREEN)✅✅      philosophers fully compiled, ready to use       ✅✅$(RESET)"
-	@echo "\n"
+$(NAME): $(OBJS)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
 clean:
-	@rm -rf $(OBJ)
-	@echo "$(BOLD)$(ORANGE)🌀     Cleaned .o philosophers's files   🌀$(RESET)"
+	rm -rf $(DIR_OBJ)
 
 fclean: clean
-	@rm -rf $(NAME)
-	@echo "$(BOLD)$(ORANGE)🌀     Cleaned philosophers exec       🌀$(RESET)"
+	$(RM) $(NAME)
 
 re: fclean all
-
-.PHONY: all clean fclean re bonus

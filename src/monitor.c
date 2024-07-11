@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 15:36:34 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 15:41:16 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:18:54 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ int	time_to_die(t_data *data)
 	i = 0;
 	while (i < data->nbr_of_philo)
 	{
-		gettimeofday(&current_time, NULL);
-		time_stamp = calcul_diff(data->philo[i]->last_meal, current_time);
+		gettimeofday(&(current_time), NULL);
+		time_stamp = calcul_diff(data->last_meal[i], current_time);
 		if (time_stamp > data->time_to_die)
 		{
 			pthread_mutex_lock(&(data->is_dying));

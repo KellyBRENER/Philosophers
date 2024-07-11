@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 15:39:35 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:19:09 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,15 +69,20 @@ void	*philo_routine(void *philo_data)
 	t_philo	*philo;
 	int		i;
 
-	i = philo->philo_id;
-	philo = (t_data *)philo_data;
-	while (philo_dead(philo->data) != -1)
+	i = 0;
+	data = (t_data *)philo_data;
+	pthread_mutex_lock(&(data->mut_id_philo));
+	i = ++data->id_philo;
+	pthread_mutex_unlock(&(data->mut_id_philo));
+	while (1)
 	{
-		if (philo_think_eat(philo->data, i) == -1)
+		if (philo_dead(data) == -1)
 			return (NULL);
-		if (philo_dead(philo->data) == -1)
+		if (philo_think_eat(data, i) == -1)
 			return (NULL);
-		if (philo_sleep(philo->data, i) == -1)
+		if (philo_dead(data) == -1)
+			return (NULL);
+		if (philo_sleep(data, i) == -1)
 			return (NULL);
 	}
 	return (NULL);

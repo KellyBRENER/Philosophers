@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:11:10 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 15:40:02 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:19:30 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	print_action(t_data *data, int i, int action)
 	struct timeval	current_time;
 	int				time_stamp;
 
-	gettimeofday(&current_time, NULL);
+	gettimeofday(&(current_time), NULL);
 	time_stamp = calcul_diff(data->start_time, current_time);
 	pthread_mutex_lock(&(data->print));
 	if (action == THINK)

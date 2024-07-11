@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:46:55 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 15:59:35 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:19:20 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,18 +44,22 @@ typedef struct s_philo
 typedef struct s_data
 {
 	int				nbr_of_philo;
-	t_philo			**philo;
-	pthread_mutex_t	*fork;
-	pthread_mutex_t	print;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
+	int				id_philo;
 	int				nbr_of_meals_min;
-	struct timeval	start_time;
-	pthread_t		monitoring;
-	pthread_mutex_t	is_dying;
 	int				dead;
 	int				all_full;
+	int				*meals;
+	pthread_t		*philo;
+	pthread_t		monitoring;
+	pthread_mutex_t	mut_id_philo;
+	pthread_mutex_t	*fork;
+	pthread_mutex_t	print;
+	pthread_mutex_t	is_dying;
+	struct timeval	start_time;
+	struct timeval	*last_meal;
 }		t_data;
 
 /*main.c : contain main and init and clean functions*/

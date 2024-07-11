@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:11:10 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:19:30 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:41:05 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int	calcul_diff(struct timeval last_meal, struct timeval current_time)
 int	philo_dead(t_data *data)
 {
 	pthread_mutex_lock(&(data->is_dying));
-	if (data->dead != -1)
+	if (data->dead != -1 || data->all_full != -1)
 	{
 		pthread_mutex_unlock(&(data->is_dying));
 		return (-1);
@@ -69,19 +69,19 @@ void	print_action(t_data *data, int i, int action)
 	time_stamp = calcul_diff(data->start_time, current_time);
 	pthread_mutex_lock(&(data->print));
 	if (action == THINK)
-		printf("%d ms : %d is thinking", time_stamp, i);
+		printf("%d ms : philo %d is thinking\n", time_stamp, i);
 	else if (action == FORK)
-		printf("%d ms philo %d has taken a fork", time_stamp, i);
+		printf("%d ms philo %d has taken a fork\n", time_stamp, i);
 	else if (action == EAT)
 	{
-		data->philo[i]->last_meal = current_time;
-		printf("%d ms philo %d is eating", time_stamp, i);
+		data->last_meal[i] = current_time;
+		printf("%d ms philo %d is eating\n", time_stamp, i);
 	}
 	else if (action == SLEEP)
-		printf("%d ms philo %d is sleeping", time_stamp, i);
+		printf("%d ms philo %d is sleeping\n", time_stamp, i);
 	else if (action == DEAD)
-		printf("%d ms philo %d is dead", time_stamp, i);
+		printf("%d ms philo %d is dead\n", time_stamp, i);
 	else if (action == FULL)
-		printf("%d ms all philo ate at least %d meals", time_stamp, i);
+		printf("%d ms all philo ate at least %d meals\n", time_stamp, i);
 	pthread_mutex_unlock(&(data->print));
 }

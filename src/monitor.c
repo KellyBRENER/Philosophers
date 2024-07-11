@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 15:36:34 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:18:54 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:42:46 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,14 @@ int	all_philo_full(t_data *data)
 	i = 0;
 	while (i < data->nbr_of_philo)
 	{
-		if (data->philo[i]->meals < data->nbr_of_meals_min)
+		if (data->nbr_of_meals_min == -1)
+			return (-1);
+		if (data->meals[i++] < data->nbr_of_meals_min)
 			return (-1);
 	}
+	pthread_mutex_lock(&(data->is_dying));
 	data->all_full = 0;
+	pthread_mutex_unlock(&(data->is_dying));
 	return (0);
 }
 
@@ -61,7 +65,7 @@ void	*monit_routine(void *info)
 		if (all_philo_full(data) == 0)
 			break ;
 	}
-	if (data->all_full == -0)
+	if (data->all_full == 0)
 		print_action(data, data->nbr_of_meals_min, FULL);
 	else
 		print_action(data, data->dead, DEAD);

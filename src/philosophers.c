@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:19:09 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:33:12 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	philo_eat(t_data *data, int i)
 		return (-1);
 	print_action(data, i, EAT);
 	usleep(data->time_to_eat);
-	data->philo[i]->meals++;
+	data->meals[i]++;
 	if (philo_dead(data) == -1)
 		return (-1);
 	return (0);
@@ -66,7 +66,7 @@ int	philo_think_eat(t_data *data, int i)
 /*philo_routine() = fonction qui lance la routine : manger, dormir, penser*/
 void	*philo_routine(void *philo_data)
 {
-	t_philo	*philo;
+	t_data	*data;
 	int		i;
 
 	i = 0;

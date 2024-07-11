@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:46:55 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:19:20 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:34:38 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 # include <sys/time.h>
 # include <unistd.h>
 
-struct s_data;
-
 typedef enum e_type
 {
 	THINK,
@@ -31,15 +29,6 @@ typedef enum e_type
 	FULL,
 	FORK
 }		t_type;
-
-typedef struct s_philo
-{
-	int	philo_id;
-	pthread_t	philo_thread_id;
-	struct timeval	last_meal;
-	int				meals;
-	t_data			*data;
-}		t_philo;
 
 typedef struct s_data
 {

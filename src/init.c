@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 15:45:39 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:01:15 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:36:20 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,13 +45,13 @@ void	init_mutex(t_data *data)
 }
 int	init_data(t_data *data, int argc, char **argv)
 {
-	data->nbr_of_philo = ft_atoi(argv[2]);
-	data->time_to_die = ft_atoi(argv[3]);
-	data->time_to_eat = ft_atoi(argv[4]);
-	data->time_to_sleep = ft_atoi(argv[5]);
+	data->nbr_of_philo = ft_atoi(argv[1]);
+	data->time_to_die = ft_atoi(argv[2]);
+	data->time_to_eat = ft_atoi(argv[3]);
+	data->time_to_sleep = ft_atoi(argv[4]);
 	data->nbr_of_meals_min = -1;
 	if (argc == 6)
-		data->nbr_of_meals_min = ft_atoi(argv[6]);
+		data->nbr_of_meals_min = ft_atoi(argv[5]);
 	data->dead = -1;
 	data->all_full = -1;
 	data->id_philo = -1;

@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 15:36:34 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/09 11:49:42 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/11 16:03:44 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,13 @@
 int	time_to_die(t_data *data)
 {
 	int				i;
-	struct timeval	*current_time;
+	struct timeval	current_time;
 	int				time_stamp;
 
 	i = 0;
 	while (i < data->nbr_of_philo)
 	{
-		gettimeofday(current_time, NULL);
+		gettimeofday(&(current_time), NULL);
 		time_stamp = calcul_diff(data->last_meal[i], current_time);
 		if (time_stamp > data->time_to_die)
 		{
@@ -51,12 +51,8 @@ int	all_philo_full(t_data *data)
 
 void	*monit_routine(void *info)
 {
-	int				i;
 	t_data			*data;
-	struct timeval	*current_time;
-	int				timestamp;
 
-	i = 0;
 	data = (t_data *) info;
 	while (1)
 	{
@@ -69,4 +65,5 @@ void	*monit_routine(void *info)
 		print_action(data, data->nbr_of_meals_min, FULL);
 	else
 		print_action(data, data->dead, DEAD);
+	return (NULL);
 }

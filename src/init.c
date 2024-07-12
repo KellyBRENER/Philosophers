@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 15:45:39 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:36:20 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 13:58:33 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	init_mutex(t_data *data)
 		pthread_mutex_init(&(data->fork[i++]), NULL);
 	pthread_mutex_init(&(data->print), NULL);
 	pthread_mutex_init(&(data->is_dying), NULL);
+	pthread_mutex_init(&(data->check_meals), NULL);
 }
 int	init_data(t_data *data, int argc, char **argv)
 {

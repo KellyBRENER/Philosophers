@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:33:12 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 14:55:09 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,10 @@ int	philo_eat(t_data *data, int i)
 	if (philo_dead(data) == -1)
 		return (-1);
 	print_action(data, i, EAT);
-	usleep(data->time_to_eat);
+	usleep(data->time_to_eat * 1000);
+	pthread_mutex_lock(&(data->check_meals));
 	data->meals[i]++;
+	pthread_mutex_unlock(&(data->check_meals));
 	if (philo_dead(data) == -1)
 		return (-1);
 	return (0);
@@ -39,27 +41,50 @@ int	philo_think_eat(t_data *data, int i)
 {
 	int	left;
 	int	right;
+	int	first;
+	int	second;
 
 	left = i;
 	if (i < data->nbr_of_philo - 1)
 		right = i + 1;
 	else
 		right = 0;
+	if (i % 2 == 0)
+	{
+		first = left;
+		second = right;
+	}
+	else
+	{
+		first = right;
+		second = left;
+	}
 	if (philo_dead(data) == -1)
 		return (-1);
 	print_action(data, i, THINK);
-	pthread_mutex_lock(&(data->fork[left]));
+	pthread_mutex_lock(&(data->fork[first]));
 	if (philo_dead(data) == -1)
+	{
+		pthread_mutex_unlock(&(data->fork[first]));
 		return (-1);
+	}
 	print_action(data, i, FORK);
-	pthread_mutex_lock(&(data->fork[right]));
+	pthread_mutex_lock(&(data->fork[second]));
 	if (philo_dead(data) == -1)
+	{
+		pthread_mutex_unlock(&(data->fork[first]));
+		pthread_mutex_unlock(&(data->fork[second]));
 		return (-1);
+	}
 	print_action(data, i, FORK);
 	if (philo_eat(data, i) == -1)
+	{
+		pthread_mutex_unlock(&(data->fork[first]));
+		pthread_mutex_unlock(&(data->fork[second]));
 		return (-1);
-	pthread_mutex_unlock(&(data->fork[left]));
-	pthread_mutex_unlock(&(data->fork[right]));
+	}
+	pthread_mutex_unlock(&(data->fork[first]));
+	pthread_mutex_unlock(&(data->fork[second]));
 	return (0);
 }
 

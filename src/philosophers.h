@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:46:55 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:34:38 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 14:32:43 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,12 +47,13 @@ typedef struct s_data
 	pthread_mutex_t	*fork;
 	pthread_mutex_t	print;
 	pthread_mutex_t	is_dying;
+	pthread_mutex_t	check_meals;
 	struct timeval	start_time;
 	struct timeval	*last_meal;
 }		t_data;
 
 /*main.c : contain main and init and clean functions*/
-void	clean_mutex(pthread_mutex_t *mutex);
+void	clean_mutex(pthread_mutex_t *fork, int	nb_mutex);
 int		clean_all(t_data *data);
 int		init_data(t_data *data, int argc, char **argv);
 void	init_mutex(t_data *data);

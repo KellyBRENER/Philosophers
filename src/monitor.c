@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 15:36:34 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:42:46 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 14:13:30 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,9 @@ int	time_to_die(t_data *data)
 	while (i < data->nbr_of_philo)
 	{
 		gettimeofday(&(current_time), NULL);
+		pthread_mutex_lock(&(data->check_meals));
 		time_stamp = calcul_diff(data->last_meal[i], current_time);
+		pthread_mutex_unlock(&(data->check_meals));
 		if (time_stamp > data->time_to_die)
 		{
 			pthread_mutex_lock(&(data->is_dying));
@@ -44,8 +46,13 @@ int	all_philo_full(t_data *data)
 	{
 		if (data->nbr_of_meals_min == -1)
 			return (-1);
+		pthread_mutex_lock(&(data->check_meals));
 		if (data->meals[i++] < data->nbr_of_meals_min)
+		{
+			pthread_mutex_unlock(&(data->check_meals));
 			return (-1);
+		}
+		pthread_mutex_unlock(&(data->check_meals));
 	}
 	pthread_mutex_lock(&(data->is_dying));
 	data->all_full = 0;

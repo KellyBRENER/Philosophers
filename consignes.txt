@@ -87,3 +87,11 @@ tous les philo doivent etre un process mais le main process n'est pas un philo
 
 on peut detecter les erreurs de thread en utilisant "valgrind --tool=helgrind ./philosophers"
  ou  "valgrind --tool=drd ./programme."
+
+ a tester :
+ valgrind --tool=helgrind ./philo 1 800 200 200 -> philo should die without eat.
+ valgrind --tool=helgrind ./philo 5 800 200 200 -> no philo should die.
+ valgrind --tool=helgrind ./philo 5 800 200 200 7 no philo should die and simulation should stop when every philo ate 7 times
+ valgrind --tool=helgrind ./philo 4 410 200 200 -> no philo should die.
+ valgrind --tool=helgrind ./philo 4 310 200 100 one philo should die.
+

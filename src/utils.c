@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:11:10 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/11 16:41:05 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 14:14:50 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,9 @@ void	print_action(t_data *data, int i, int action)
 		printf("%d ms philo %d has taken a fork\n", time_stamp, i);
 	else if (action == EAT)
 	{
+		pthread_mutex_lock(&(data->check_meals));
 		data->last_meal[i] = current_time;
+		pthread_mutex_unlock(&(data->check_meals));
 		printf("%d ms philo %d is eating\n", time_stamp, i);
 	}
 	else if (action == SLEEP)

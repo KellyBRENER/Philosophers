@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:46:55 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 14:32:43 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 16:24:17 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct s_data
 }		t_data;
 
 /*main.c : contain main and init and clean functions*/
-void	clean_mutex(pthread_mutex_t *fork, int	nb_mutex);
+void	clean_mutex(pthread_mutex_t *fork, int nb_mutex);
 int		clean_all(t_data *data);
 int		init_data(t_data *data, int argc, char **argv);
 void	init_mutex(t_data *data);
@@ -75,5 +75,8 @@ void	*philo_routine(void *philo_data);
 int		time_to_die(t_data *data);
 int		all_philo_full(t_data *data);
 void	*monit_routine(void *info);
+
+/*init.c : function wich check argv and initialise t_data*/
+int	check_arg(char **argv);
 
 #endif

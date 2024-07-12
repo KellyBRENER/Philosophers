@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:10:37 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 14:53:22 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 16:22:35 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,33 +51,25 @@ int	clean_all(t_data *data)
 	return (-1);
 }
 
-int	check_if_possible(t_data *data)
-{
-	if (data->nbr_of_philo < 2 || data->nbr_of_philo > 200)
-		return (-1);
-	// if (data->time_to_die < data->time_to_eat + data->time_to_sleep)
-	// 	return (-1);
-	return (0);
-}
-
-int	main(int argc, char **argv)
+void	*one_philo(void *philo_data)
 {
 	t_data	*data;
-	int		i;
+
+	data = (t_data *)philo_data;
+	print_action(data, 0, THINK);
+	pthread_mutex_lock(&(data->fork[0]));
+	print_action(data, 0, FORK);
+	usleep(data->time_to_die * 1000);
+	print_action(data, 0, DEAD);
+	pthread_mutex_unlock(&(data->fork[0]));
+	return (NULL);
+}
+
+void	run_philo(t_data *data)
+{
+	int	i;
 
 	i = 0;
-	if (argc < 5 || argc > 6)
-		return (1);
-	data = malloc(sizeof(t_data));
-	memset(data, 0, sizeof(t_data));
-	if (init_data(data, argc, argv) == -1)
-		return (1);
-	if (check_if_possible(data) == -1)
-	{
-		printf("wrong values");
-		clean_all(data);
-		return (1);
-	}
 	while (i < data->nbr_of_philo)
 	{
 		data->last_meal[i] = data->start_time;
@@ -90,5 +82,27 @@ int	main(int argc, char **argv)
 	while (i < data->nbr_of_philo)
 		pthread_join(data->philo[i++], NULL);
 	clean_all(data);
+}
+
+int	main(int argc, char **argv)
+{
+	t_data	*data;
+
+	if (argc < 5 || argc > 6)
+		return (1);
+	if (check_arg(argv) == -1)
+		return (printf("invalid argument\n"), 1);
+	data = malloc(sizeof(t_data));
+	memset(data, 0, sizeof(t_data));
+	if (init_data(data, argc, argv) == -1)
+		return (1);
+	if (data->nbr_of_philo == 1)
+	{
+		pthread_create(&(data->philo[0]), NULL, one_philo, (void *)data);
+		pthread_join(data->philo[0], NULL);
+		clean_all(data);
+	}
+	else
+		run_philo(data);
 	return (0);
 }

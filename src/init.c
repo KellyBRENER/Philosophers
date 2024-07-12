@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 15:45:39 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 13:58:33 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 16:22:49 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	init_mutex(t_data *data)
 	pthread_mutex_init(&(data->is_dying), NULL);
 	pthread_mutex_init(&(data->check_meals), NULL);
 }
+
 int	init_data(t_data *data, int argc, char **argv)
 {
 	data->nbr_of_philo = ft_atoi(argv[1]);
@@ -60,5 +61,28 @@ int	init_data(t_data *data, int argc, char **argv)
 		return (-1);
 	init_mutex(data);
 	gettimeofday(&(data->start_time), NULL);
+	return (0);
+}
+
+int	check_arg(char **argv)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	j = 0;
+	if (argv[1][0] == '0' && !argv[1][1])
+		return (-1);
+	while (argv[i])
+	{
+		while (argv[i][j])
+		{
+			if ((argv[i][j] > '0' || argv[i][j] < '9'))
+				j++;
+			else
+				return (-1);
+		}
+		i++;
+	}
 	return (0);
 }

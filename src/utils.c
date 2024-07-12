@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:11:10 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 14:14:50 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/12 16:04:28 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	print_action(t_data *data, int i, int action)
 	time_stamp = calcul_diff(data->start_time, current_time);
 	pthread_mutex_lock(&(data->print));
 	if (action == THINK)
-		printf("%d ms : philo %d is thinking\n", time_stamp, i);
+		printf("%d ms philo %d is thinking\n", time_stamp, i);
 	else if (action == FORK)
 		printf("%d ms philo %d has taken a fork\n", time_stamp, i);
 	else if (action == EAT)

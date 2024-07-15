@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:46:55 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 16:24:17 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/15 13:31:56 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,6 @@ int		all_philo_full(t_data *data);
 void	*monit_routine(void *info);
 
 /*init.c : function wich check argv and initialise t_data*/
-int	check_arg(char **argv);
+int		check_arg(char **argv);
 
 #endif

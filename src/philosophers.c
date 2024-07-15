@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/02 14:08:30 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 16:29:23 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/15 13:55:14 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ int	philo_eat(t_data *data, int i)
 
 int	philo_take_fork(t_data *data, int i, int first, int second)
 {
-	if (philo_dead(data) == -1)
-		return (-1);
 	pthread_mutex_lock(&(data->fork[first]));
 	if (philo_dead(data) == -1)
 	{
@@ -48,7 +46,6 @@ int	philo_take_fork(t_data *data, int i, int first, int second)
 		return (-1);
 	}
 	print_action(data, i, FORK);
-	usleep(3000);
 	pthread_mutex_lock(&(data->fork[second]));
 	if (philo_dead(data) == -1)
 	{
@@ -65,32 +62,33 @@ int	philo_take_fork(t_data *data, int i, int first, int second)
 	}
 	pthread_mutex_unlock(&(data->fork[first]));
 	pthread_mutex_unlock(&(data->fork[second]));
+	return (0);
 }
 
 int	philo_think_eat(t_data *data, int i)
 {
-	int	left;
-	int	right;
 	int	first;
 	int	second;
 
-	left = i;
-	if (i < data->nbr_of_philo - 1)
-		right = i + 1;
-	else
-		right = 0;
 	if (i % 2 == 0)
 	{
-		first = left;
-		second = right;
+		first = i;
+		second = i + 1;
 	}
 	else
 	{
-		first = right;
-		second = left;
+		first = i + 1;
+		second = i;
+	}
+	if (i == data->nbr_of_philo - 1)
+	{
+		first = i;
+		second = 0;
 	}
 	print_action(data, i, THINK);
 	usleep(3000);
+	if (philo_dead(data) == -1)
+		return (-1);
 	if (philo_take_fork(data, i, first, second) == -1)
 		return (-1);
 	return (0);

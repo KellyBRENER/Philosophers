@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/09 11:11:10 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 16:04:28 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/15 15:25:15 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,20 +69,20 @@ void	print_action(t_data *data, int i, int action)
 	time_stamp = calcul_diff(data->start_time, current_time);
 	pthread_mutex_lock(&(data->print));
 	if (action == THINK)
-		printf("%d ms philo %d is thinking\n", time_stamp, i);
+		printf("%d ms philo %d is thinking\n", time_stamp, i + 1);
 	else if (action == FORK)
-		printf("%d ms philo %d has taken a fork\n", time_stamp, i);
+		printf("%d ms philo %d has taken a fork\n", time_stamp, i + 1);
 	else if (action == EAT)
 	{
 		pthread_mutex_lock(&(data->check_meals));
 		data->last_meal[i] = current_time;
 		pthread_mutex_unlock(&(data->check_meals));
-		printf("%d ms philo %d is eating\n", time_stamp, i);
+		printf("%d ms philo %d is eating\n", time_stamp, i + 1);
 	}
 	else if (action == SLEEP)
-		printf("%d ms philo %d is sleeping\n", time_stamp, i);
+		printf("%d ms philo %d is sleeping\n", time_stamp, i + 1);
 	else if (action == DEAD)
-		printf("%d ms philo %d is dead\n", time_stamp, i);
+		printf("%d ms philo %d is dead\n", time_stamp, i + 1);
 	else if (action == FULL)
 		printf("%d ms all philo ate at least %d meals\n", time_stamp, i);
 	pthread_mutex_unlock(&(data->print));

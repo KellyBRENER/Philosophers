@@ -6,7 +6,7 @@
 #    By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/02 14:01:34 by kbrener-          #+#    #+#              #
-#    Updated: 2024/07/11 16:18:11 by kbrener-         ###   ########.fr        #
+#    Updated: 2024/07/15 15:13:36 by kbrener-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = philo
 DIR_SRC = src/
 DIR_OBJ = obj/
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -ggdb
+CFLAGS = -Wall -Wextra -Werror -g
 RM = rm -f
 
 SRCS =  $(wildcard $(DIR_SRC)*.c) \

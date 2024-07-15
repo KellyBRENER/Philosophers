@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/11 15:45:39 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 16:22:49 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/15 15:17:27 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,16 +72,17 @@ int	check_arg(char **argv)
 	i = 1;
 	j = 0;
 	if (argv[1][0] == '0' && !argv[1][1])
-		return (-1);
+		return (printf("no philosopher\n"), -1);
 	while (argv[i])
 	{
 		while (argv[i][j])
 		{
-			if ((argv[i][j] > '0' || argv[i][j] < '9'))
+			if ((argv[i][j] >= '0' && argv[i][j] <= '9'))
 				j++;
 			else
-				return (-1);
+				return (printf("argument should be a number\n"), -1);
 		}
+		j = 0;
 		i++;
 	}
 	return (0);

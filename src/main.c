@@ -6,7 +6,7 @@
 /*   By: kbrener- <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 14:10:37 by kbrener-          #+#    #+#             */
-/*   Updated: 2024/07/12 16:22:35 by kbrener-         ###   ########.fr       */
+/*   Updated: 2024/07/15 15:06:54 by kbrener-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ int	main(int argc, char **argv)
 	t_data	*data;
 
 	if (argc < 5 || argc > 6)
-		return (1);
+		return (printf("five to six arguments necessary\n"), 1);
 	if (check_arg(argv) == -1)
 		return (printf("invalid argument\n"), 1);
 	data = malloc(sizeof(t_data));
